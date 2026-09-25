@@ -1,0 +1,13 @@
+{
+  "name": "Gigga",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "postCreateCommand": "npm install && cp -n .env.example .env.local && npm run setup",
+  "postAttachCommand": "npm run dev -- --hostname 0.0.0.0",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Gigga", "onAutoForward": "openPreview" }
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["README.md"] }
+  }
+}
