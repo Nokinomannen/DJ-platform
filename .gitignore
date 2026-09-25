@@ -44,3 +44,6 @@ next-env.d.ts
 
 # Allow the env template
 !.env.example
+
+# Local preview screenshots
+/.preview/
