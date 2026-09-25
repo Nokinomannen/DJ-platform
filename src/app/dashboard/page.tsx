@@ -5,7 +5,7 @@ import { requireUser } from "@/lib/auth/session";
 import { formatSek, todayInSweden } from "@/lib/format";
 import { listBookingsForArtist, listBookingsForBooker } from "@/lib/queries";
 
-export const metadata: Metadata = { title: "Min sida" };
+export const metadata: Metadata = { title: "Dashboard" };
 
 export default async function DashboardPage() {
   const user = await requireUser("/dashboard");
@@ -18,23 +18,23 @@ export default async function DashboardPage() {
         {user.role === "artist" && (
           <div className="card flex flex-col gap-4 border-accent/40 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="font-semibold">Skapa din artistprofil</p>
-              <p className="text-sm text-muted">Fyll i pris, stad och genrer så syns du i sökningen direkt.</p>
+              <p className="font-semibold">Create your artist profile</p>
+              <p className="text-sm text-muted">Add your price, city and genres and you’ll show up in search right away.</p>
             </div>
             <Link href="/dashboard/profile" className="btn-primary">
-              Kom igång
+              Get started
             </Link>
           </div>
         )}
         <section>
-          <h2 className="mb-4 text-lg font-semibold">Mina bokningar</h2>
+          <h2 className="mb-4 text-lg font-semibold">My bookings</h2>
           <BookingList
             bookings={myBookings}
             perspective="booker"
-            empty="Du har inte bokat något än. Hitta en artist och skicka en förfrågan."
+            empty="You haven't booked anything yet. Find an artist and send a request."
           />
           <Link href="/search" className="btn-secondary mt-4">
-            Hitta artister
+            Find artists
           </Link>
         </section>
       </div>
@@ -52,31 +52,31 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-10">
       <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Nya förfrågningar" value={String(pending.length)} highlight={pending.length > 0} />
-        <Stat label="Kommande spelningar" value={String(upcoming.length)} />
-        <Stat label="Bokat värde framåt" value={formatSek(upcomingRevenue)} />
+        <Stat label="New requests" value={String(pending.length)} highlight={pending.length > 0} />
+        <Stat label="Upcoming gigs" value={String(upcoming.length)} />
+        <Stat label="Upcoming booked value" value={formatSek(upcomingRevenue)} />
       </div>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold">Förfrågningar att svara på</h2>
-        <BookingList bookings={pending} perspective="artist" empty="Inga obesvarade förfrågningar just nu." />
+        <h2 className="mb-4 text-lg font-semibold">Requests to answer</h2>
+        <BookingList bookings={pending} perspective="artist" empty="No unanswered requests right now." />
       </section>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold">Kommande spelningar</h2>
-        <BookingList bookings={upcoming} perspective="artist" empty="Inga bekräftade spelningar framåt." />
+        <h2 className="mb-4 text-lg font-semibold">Upcoming gigs</h2>
+        <BookingList bookings={upcoming} perspective="artist" empty="No confirmed upcoming gigs." />
       </section>
 
       {past.length > 0 && (
         <section>
-          <h2 className="mb-4 text-lg font-semibold">Historik</h2>
+          <h2 className="mb-4 text-lg font-semibold">History</h2>
           <BookingList bookings={past} perspective="artist" empty="" />
         </section>
       )}
 
       {myBookings.length > 0 && (
         <section>
-          <h2 className="mb-4 text-lg font-semibold">Mina egna bokningar</h2>
+          <h2 className="mb-4 text-lg font-semibold">My own bookings</h2>
           <BookingList bookings={myBookings} perspective="booker" empty="" />
         </section>
       )}

@@ -8,7 +8,7 @@ import { db, schema } from "@/lib/db";
 import { formatDate, formatSek, todayInSweden } from "@/lib/format";
 import { getArtistAddons, getArtistForUser } from "@/lib/queries";
 
-export const metadata: Metadata = { title: "Tillägg & kalender" };
+export const metadata: Metadata = { title: "Add-ons & calendar" };
 
 export default async function ExtrasPage() {
   const user = await requireUser("/dashboard/extras");
@@ -29,9 +29,9 @@ export default async function ExtrasPage() {
     <div className="grid gap-10 lg:grid-cols-2">
       <section className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold">Tillägg</h2>
+          <h2 className="text-lg font-semibold">Add-ons</h2>
           <p className="mt-1 text-sm text-muted">
-            Extra ljud, ljus, mikrofon eller rökmaskin. Bokaren kryssar i det de vill ha och ser priset direkt.
+            Extra sound, lights, a mic or a smoke machine. Bookers tick what they want and see the price instantly.
           </p>
         </div>
         {addons.length > 0 && (
@@ -42,58 +42,58 @@ export default async function ExtrasPage() {
                   <p className="font-medium">{a.name}</p>
                   <p className="text-sm text-muted">
                     {formatSek(a.price)}
-                    {a.priceType === "per_hour" ? " per timme" : " fast pris"}
+                    {a.priceType === "per_hour" ? " per hour" : " fixed price"}
                     {a.description && ` · ${a.description}`}
                   </p>
                 </div>
                 <form action={deleteAddon.bind(null, a.id)}>
-                  <button className="text-xs text-muted hover:text-danger">Ta bort</button>
+                  <button className="text-xs text-muted hover:text-danger">Remove</button>
                 </form>
               </li>
             ))}
           </ul>
         )}
         <ActionForm action={addAddon} resetOnSuccess className="card space-y-4 p-6">
-          <h3 className="font-semibold">Nytt tillägg</h3>
+          <h3 className="font-semibold">New add-on</h3>
           <div>
             <label className="label" htmlFor="a-name">
-              Namn
+              Name
             </label>
-            <input id="a-name" name="name" required placeholder="T.ex. Extra PA för 200+ gäster" className="input" />
+            <input id="a-name" name="name" required placeholder="E.g. Extra PA for 200+ guests" className="input" />
           </div>
           <div>
             <label className="label" htmlFor="a-desc">
-              Beskrivning
+              Description
             </label>
-            <input id="a-desc" name="description" placeholder="Valfritt" className="input" />
+            <input id="a-desc" name="description" placeholder="Optional" className="input" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label" htmlFor="a-price">
-                Pris (kr)
+                Price (SEK)
               </label>
               <input id="a-price" name="price" type="number" min={0} step={50} required className="input" />
             </div>
             <div>
               <label className="label" htmlFor="a-type">
-                Prissättning
+                Pricing
               </label>
               <select id="a-type" name="priceType" className="input">
-                <option value="fixed">Fast pris</option>
-                <option value="per_hour">Per timme</option>
+                <option value="fixed">Fixed price</option>
+                <option value="per_hour">Per hour</option>
               </select>
             </div>
           </div>
-          <SubmitButton>Lägg till</SubmitButton>
+          <SubmitButton>Add</SubmitButton>
         </ActionForm>
       </section>
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold">Blockerade datum</h2>
+          <h2 className="text-lg font-semibold">Blocked dates</h2>
           <p className="mt-1 text-sm text-muted">
-            Datum du inte kan spela. Du döljs i sökningar för de datumen och kan inte få förfrågningar på dem.
-            Bekräftade bokningar blockerar automatiskt.
+            Dates you can’t play. You’re hidden from search on those dates and can’t get requests for them.
+            Confirmed bookings block dates automatically.
           </p>
         </div>
         {blocked.length > 0 && (
@@ -102,7 +102,7 @@ export default async function ExtrasPage() {
               <li key={d.id} className="flex items-center justify-between p-4 text-sm">
                 {formatDate(d.date)}
                 <form action={removeBlockedDate.bind(null, d.id)}>
-                  <button className="text-xs text-muted hover:text-danger">Ta bort</button>
+                  <button className="text-xs text-muted hover:text-danger">Remove</button>
                 </form>
               </li>
             ))}
@@ -112,11 +112,11 @@ export default async function ExtrasPage() {
           <div className="flex items-end gap-3">
             <div className="flex-1">
               <label className="label" htmlFor="d-date">
-                Datum
+                Date
               </label>
               <input id="d-date" name="date" type="date" min={today} required className="input" />
             </div>
-            <SubmitButton>Blockera</SubmitButton>
+            <SubmitButton>Block</SubmitButton>
           </div>
         </ActionForm>
       </section>

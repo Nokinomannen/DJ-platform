@@ -33,16 +33,16 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
     <div className="card p-5 shadow-2xl shadow-black/40">
       <p className="text-2xl font-bold">
         {formatSek(artist.hourlyRate)}
-        <span className="text-base font-normal text-muted"> / timme</span>
+        <span className="text-base font-normal text-muted"> / hour</span>
       </p>
-      <p className="text-xs text-muted">Minst {artist.minHours} timmar</p>
+      <p className="text-xs text-muted">Minimum {artist.minHours} hours</p>
 
       <ActionForm action={requestBooking} className="mt-5 space-y-3">
         <input type="hidden" name="artistId" value={artist.id} />
         <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="label" htmlFor="b-date">
-              Datum
+              Date
             </label>
             <input
               id="b-date"
@@ -62,12 +62,12 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
             <input id="b-start" type="time" name="startTime" defaultValue="20:00" required className="input" />
           </div>
         </div>
-        {unavailable && <p className="text-sm text-danger">Upptagen det datumet. Välj ett annat.</p>}
+        {unavailable && <p className="text-sm text-danger">Busy on that date. Pick another one.</p>}
 
         <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="label" htmlFor="b-hours">
-              Timmar
+              Hours
             </label>
             <select
               id="b-hours"
@@ -79,7 +79,7 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
               {Array.from({ length: MAX_BOOKING_HOURS - artist.minHours + 1 }, (_, i) => artist.minHours + i).map(
                 (h) => (
                   <option key={h} value={h}>
-                    {h} tim
+                    {h} hrs
                   </option>
                 ),
               )}
@@ -87,7 +87,7 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
           </div>
           <div>
             <label className="label" htmlFor="b-guests">
-              Gäster
+              Guests
             </label>
             <input id="b-guests" type="number" name="guests" min={1} defaultValue={60} required className="input" />
           </div>
@@ -95,11 +95,11 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
 
         <div>
           <label className="label" htmlFor="b-type">
-            Typ av event
+            Event type
           </label>
           <select id="b-type" name="eventType" required defaultValue="" className="input">
             <option value="" disabled>
-              Välj…
+              Choose…
             </option>
             {EVENT_TYPES.map((e) => (
               <option key={e.id} value={e.id}>
@@ -111,20 +111,20 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
 
         <div>
           <label className="label" htmlFor="b-location">
-            Plats
+            Location
           </label>
           <input
             id="b-location"
             name="location"
             required
-            placeholder="Lokal eller adress"
+            placeholder="Venue or address"
             className="input"
           />
         </div>
 
         {addons.length > 0 && (
           <fieldset>
-            <legend className="label">Lägg till</legend>
+            <legend className="label">Add-ons</legend>
             <div className="space-y-2">
               {addons.map((a) => (
                 <label
@@ -146,7 +146,7 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
                   </span>
                   <span className="text-muted">
                     +{formatSek(a.price)}
-                    {a.priceType === "per_hour" && "/tim"}
+                    {a.priceType === "per_hour" && "/hr"}
                   </span>
                 </label>
               ))}
@@ -156,13 +156,13 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
 
         <div>
           <label className="label" htmlFor="b-message">
-            Meddelande
+            Message
           </label>
           <textarea
             id="b-message"
             name="message"
             rows={3}
-            placeholder="Berätta om festen, önskelåtar, tider…"
+            placeholder="Tell them about the party, song requests, timings…"
             className="input resize-none"
           />
         </div>
@@ -170,7 +170,7 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
         <dl className="space-y-1.5 border-t border-border pt-4 text-sm">
           <div className="flex justify-between">
             <dt className="text-muted">
-              {formatSek(artist.hourlyRate)} × {q.billableHours} tim
+              {formatSek(artist.hourlyRate)} × {q.billableHours} hrs
             </dt>
             <dd>{formatSek(q.performance)}</dd>
           </div>
@@ -181,27 +181,27 @@ export function BookingCard({ artist, addons, unavailableDates, today, isLoggedI
             </div>
           ))}
           <div className="flex justify-between">
-            <dt className="text-muted">Serviceavgift ({Math.round(SERVICE_FEE_RATE * 100)} %)</dt>
+            <dt className="text-muted">Service fee ({Math.round(SERVICE_FEE_RATE * 100)} %)</dt>
             <dd>{formatSek(q.serviceFee)}</dd>
           </div>
           <div className="flex justify-between border-t border-border pt-2 text-base font-semibold">
-            <dt>Totalt</dt>
+            <dt>Total</dt>
             <dd>{formatSek(q.total)}</dd>
           </div>
         </dl>
 
         {isOwner ? (
-          <p className="rounded-xl bg-background p-3 text-center text-sm text-muted">Det här är din egen profil.</p>
+          <p className="rounded-xl bg-background p-3 text-center text-sm text-muted">This is your own profile.</p>
         ) : isLoggedIn ? (
-          <SubmitButton className="btn-primary w-full py-3" pendingText="Skickar…" disabled={unavailable}>
-            Skicka bokningsförfrågan
+          <SubmitButton className="btn-primary w-full py-3" pendingText="Sending…" disabled={unavailable}>
+            Send booking request
           </SubmitButton>
         ) : (
           <Link href={loginHref} className="btn-primary w-full py-3">
-            Logga in för att boka
+            Log in to book
           </Link>
         )}
-        <p className="text-center text-xs text-muted">Det kostar inget att skicka en förfrågan.</p>
+        <p className="text-center text-xs text-muted">Sending a request is free.</p>
       </ActionForm>
     </div>
   );

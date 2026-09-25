@@ -44,7 +44,7 @@ export function AudioPlayer({ src, title }: { src: string; title: string }) {
       <button
         type="button"
         onClick={toggle}
-        aria-label={playing ? `Pausa ${title}` : `Spela ${title}`}
+        aria-label={playing ? `Pause ${title}` : `Play ${title}`}
         className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground transition hover:brightness-110"
       >
         {playing ? (
@@ -67,7 +67,7 @@ export function AudioPlayer({ src, title }: { src: string; title: string }) {
             max={duration || 0}
             step={0.1}
             value={time}
-            aria-label="Spola"
+            aria-label="Seek"
             onChange={(e) => {
               const audio = audioRef.current;
               if (audio) audio.currentTime = Number(e.target.value);

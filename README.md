@@ -1,95 +1,107 @@
 # Gigga
 
-Bokningsplattform för DJs, livemusiker, ljud & ljus och festfixare. Tänk Airbnb, fast för musiken till festen: hitta artister nära dig, lyssna på riktiga set direkt i profilen, bygg ihop bokningen med tillägg som PA och ljus, och skicka en förfrågan med fast pris. Artisterna får en profil som ersätter Instagram-bion och DM-inkorgen.
+A booking marketplace for DJs, live musicians, sound & lights and party planners. Think Airbnb, but for the music at your party: find artists near you on a map, listen to real sets right on their profile, build the booking with add-ons like a PA and lights, and send a request with a fixed price. Artists get a profile that replaces the Instagram bio and the DM inbox.
 
-"Gigga" är ett arbetsnamn.
+"Gigga" is a working name.
 
-## Kom igång
+## Try it without a terminal
 
-Kräver Node 20.9 eller senare.
+Open the repo in GitHub Codespaces. Everything installs, the demo data loads and the app starts on its own:
+
+**https://codespaces.new/Nokinomannen/DJ-platform?ref=claude/dreamy-ramanujan-su6mqc**
+
+When it's ready a preview opens. If it doesn't, open the **Ports** tab and click the globe next to port 3000.
+
+## Run locally
+
+Requires Node 20.9 or later.
 
 ```bash
 npm install
 cp .env.example .env.local
-npm run setup   # skapar databasen och fyller den med demodata
+npm run setup   # creates the database and loads demo data
 npm run dev
 ```
 
-Öppna http://localhost:3000. Alla demokonton har lösenordet `gigga1234`:
+Open http://localhost:3000. Every demo account uses the password `gigga1234`:
 
-| Konto | Roll |
+| Account | Role |
 | --- | --- |
-| `demo@gigga.se` | Bokare, har en väntande förfrågan och en genomförd bokning att betygsätta |
-| `nova@demo.gigga.se` | DJ Nova, har inkommande förfrågningar, chatt och blockerade datum |
+| `demo@gigga.se` | Booker with a pending request and a completed booking to review |
+| `nova@demo.gigga.se` | DJ Nova, with incoming requests, chat and blocked dates |
 
-`npm run db:seed` återställer all data, inklusive uppladdade filer.
+`npm run db:seed` resets all data, including uploaded files.
 
-## Vad som finns i MVP:n
+## What's in the MVP
 
-**För bokare**
-- Sök på stad eller "Nära mig" (webbläsarens plats). Resultaten sorteras efter avstånd och visar bara artister som är villiga att resa så långt.
-- Filter på kategori, genre, maxpris per timme, maxavstånd och ledigt datum. Artister som blockerat datumet eller redan har en bekräftad bokning då döljs.
-- Artistprofil med ljudspelare för uppladdade klipp och inbäddade spelare för SoundCloud, Mixcloud, YouTube och Spotify.
-- Bokningskort med live-prisuträkning: timpris × timmar (minst artistens minimum), valda tillägg och serviceavgift.
-- Bokningssida med status, chatt och omdöme efter genomfört event.
+**For bookers**
+- Airbnb-style search: results on the left, a map with price pins on the right. Hovering a card highlights its pin, clicking a pin opens a mini card, and "Search this area" searches wherever you've moved the map. On mobile, a "Show map" button toggles between list and map.
+- Search by city or "Near me" (browser location). Results are sorted by distance and only include artists willing to travel that far.
+- Filter by category, genre, max hourly price, max distance and available date. Artists who blocked the date or already have a confirmed booking are hidden.
+- Artist profile with an audio player for uploaded clips and embedded players for SoundCloud, Mixcloud, YouTube and Spotify.
+- Booking card with a live price: hourly rate × hours (at least the artist's minimum), chosen add-ons and a service fee.
+- Booking page with status, chat, and a review after the event.
 
-**För artister**
-- Profil med bild, bio, genrer, tillfällen, hemstad, reseradie, timpris och vad som ingår.
-- Ljud: ladda upp MP3/M4A/WAV/OGG (max 25 MB) eller länka mixar.
-- Tillägg med fast pris eller timpris (extra PA, ljuspaket, ceremonimusik).
-- Blockera datum. Bekräftade bokningar blockerar automatiskt.
-- Dashboard med nya förfrågningar, kommande spelningar och bokat värde. Bekräfta eller neka med ett klick.
+**For artists**
+- Profile with photo, bio, genres, event types, home city, travel radius, hourly rate and what's included.
+- Sound: upload MP3/M4A/WAV/OGG (max 25 MB) or link mixes.
+- Add-ons with a fixed or hourly price (extra PA, light package, ceremony music).
+- Block dates. Confirmed bookings block dates automatically.
+- Dashboard with new requests, upcoming gigs and booked value. Confirm or decline in one click.
 
-**Förtroende**
-- Omdömen kan bara lämnas av bokaren efter en bekräftad bokning vars datum har passerat, och märks som verifierade.
-- Priset räknas alltid om på servern från artistens aktuella tillägg. Bokningen sparar en ögonblicksbild av prisraderna så att senare prisändringar inte skriver om historiken.
+**Trust**
+- Reviews can only be left by the booker, after a confirmed booking whose date has passed, and are marked as verified.
+- Map pins show an approximate location (offset 1–3.5 km from the city centre), never an artist's exact address.
+- Prices are always recalculated on the server from the artist's current add-ons. Each booking stores a snapshot of its price lines so later price changes don't rewrite history.
 
-## Teknik
+## Tech
 
 - **Next.js 16** (App Router, Server Components, Server Actions), React 19, TypeScript
 - **Tailwind CSS 4**
-- **Drizzle ORM + libSQL/SQLite**: lokal fil i utveckling, [Turso](https://turso.tech) eller annan libSQL-server i produktion via `DATABASE_URL` och `DATABASE_AUTH_TOKEN`
-- **Auth**: e-post och lösenord (bcrypt), sessionen ligger i en signerad httpOnly-cookie (JWT via `jose`)
-- **Uppladdningar**: lokal disk under `data/uploads`, serveras via `/api/media/[key]` med stöd för Range-requests så att ljudspelaren kan spola
-- **Vitest** för enhetstester av prissättning, geo och inbäddningslänkar
+- **Leaflet** via react-leaflet with CARTO dark map tiles (OpenStreetMap data, no API key)
+- **Drizzle ORM + libSQL/SQLite**: a local file in development, [Turso](https://turso.tech) or another libSQL server in production via `DATABASE_URL` and `DATABASE_AUTH_TOKEN`
+- **Auth**: email and password (bcrypt), with the session in a signed httpOnly cookie (JWT via `jose`)
+- **Uploads**: local disk under `data/uploads`, served through `/api/media/[key]` with Range support so the audio player can seek
+- **Vitest** unit tests for pricing, geo and embed links
 
 ```
 src/
-  app/                 sidor och route handlers
-  components/          delade UI-komponenter
+  app/                 pages and route handlers
+  components/          shared UI
+    search/            split list + map search view
   lib/
-    actions/           Server Actions (auth, bokning, profil, ljud)
-    auth/session.ts    sessionshantering
-    db/schema.ts       databasschema
-    queries.ts         sök och dataåtkomst
-    pricing.ts         prisuträkning, delas av klient och server
-    geo.ts             städer och avståndsberäkning
-    embeds.ts          SoundCloud/Mixcloud/YouTube/Spotify-länkar till spelare
-scripts/               migrering, seed och syntetiskt demoljud
-drizzle/               genererade SQL-migreringar
+    actions/           Server Actions (auth, booking, profile, sound)
+    auth/session.ts    session handling
+    db/schema.ts       database schema
+    queries.ts         search and data access
+    pricing.ts         price calculation, shared by client and server
+    geo.ts             cities, distances, approximate pins, map bounds
+    embeds.ts          SoundCloud/Mixcloud/YouTube/Spotify links to players
+scripts/               migrations, seed and synthesised demo audio
+drizzle/               generated SQL migrations
 ```
 
-## Kommandon
+## Commands
 
-| Kommando | Gör |
+| Command | Does |
 | --- | --- |
-| `npm run dev` | Startar utvecklingsservern |
-| `npm run build` / `npm start` | Produktionsbygge och server (kräver `SESSION_SECRET`) |
-| `npm test` | Enhetstester |
-| `npm run lint` / `npm run typecheck` | ESLint och TypeScript |
-| `npm run db:generate` | Genererar en ny migrering efter ändring i `schema.ts` |
-| `npm run db:migrate` | Kör migreringar |
-| `npm run db:seed` | Återställer databasen till demodata |
-| `npm run db:studio` | Öppnar Drizzle Studio |
+| `npm run dev` | Starts the dev server |
+| `npm run build` / `npm start` | Production build and server (requires `SESSION_SECRET`) |
+| `npm test` | Unit tests |
+| `npm run lint` / `npm run typecheck` | ESLint and TypeScript |
+| `npm run db:generate` | Generates a migration after changing `schema.ts` |
+| `npm run db:migrate` | Runs migrations |
+| `npm run db:seed` | Resets the database to demo data |
+| `npm run db:studio` | Opens Drizzle Studio |
 
-## Innan skarp lansering
+## Before a real launch
 
-MVP:n är byggd för att validera idén, inte för produktion. Det här saknas:
+The MVP is built to validate the idea, not for production. Still missing:
 
-1. **Betalning.** Stripe Connect (eller Swish för företag) med deposition vid bekräftelse och utbetalning till artisten efter eventet. Utan betalning i plattformen tar folk kontakten utanför efter första bokningen.
-2. **Filer i molnet.** Byt `src/lib/storage.ts` mot S3, Cloudflare R2 eller Supabase Storage. Lokal disk fungerar inte på serverless-hosting.
-3. **Notiser.** E-post (t.ex. Resend) när en förfrågan kommer in, besvaras eller får ett nytt meddelande.
-4. **Konto.** E-postverifiering, glömt lösenord och rate limiting på inloggning.
-5. **Geo.** Riktig adress- och postnummersökning (geokodning) i stället för stadslistan, och PostGIS eller liknande när antalet artister växer. Idag filtreras avstånd i minnet.
-6. **Villkor.** Avbokningsregler, avtal mellan bokare och artist, GDPR och användarvillkor.
-7. **Kartvy** i sökresultaten och en riktig tillgänglighetskalender.
+1. **Payments.** Stripe Connect (or Swish for businesses) with a deposit on confirmation and payout to the artist after the event. Without payments on the platform, people move off it after the first booking.
+2. **Cloud file storage.** Swap `src/lib/storage.ts` for S3, Cloudflare R2 or Supabase Storage. Local disk doesn't work on serverless hosting.
+3. **Notifications.** Email (e.g. Resend) when a request comes in, gets answered or gets a new message.
+4. **Accounts.** Email verification, password reset and rate limiting on login.
+5. **Geo.** Real address and postcode search (geocoding) instead of the city list, and PostGIS or similar as the number of artists grows. Distance filtering currently happens in memory.
+6. **Terms.** Cancellation policy, contracts between booker and artist, GDPR and terms of service.
+7. **Map tiles at scale.** CARTO's free basemaps have usage limits; switch to a paid tile provider (MapTiler, Mapbox, Stadia) before launch.

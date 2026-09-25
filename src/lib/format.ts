@@ -1,4 +1,4 @@
-const sek = new Intl.NumberFormat("sv-SE", {
+const sek = new Intl.NumberFormat("en-GB", {
   style: "currency",
   currency: "SEK",
   maximumFractionDigits: 0,
@@ -8,7 +8,7 @@ export function formatSek(amount: number) {
   return sek.format(amount);
 }
 
-const longDate = new Intl.DateTimeFormat("sv-SE", {
+const longDate = new Intl.DateTimeFormat("en-GB", {
   weekday: "short",
   day: "numeric",
   month: "long",
@@ -22,7 +22,7 @@ export function formatDate(isoDate: string) {
 }
 
 export function formatDateTime(date: Date) {
-  return new Intl.DateTimeFormat("sv-SE", {
+  return new Intl.DateTimeFormat("en-GB", {
     dateStyle: "medium",
     timeStyle: "short",
     timeZone: "Europe/Stockholm",

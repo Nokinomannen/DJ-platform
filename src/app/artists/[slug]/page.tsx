@@ -16,7 +16,7 @@ export async function generateMetadata(props: PageProps<"/artists/[slug]">): Pro
   if (!profile) return {};
   const { artist } = profile;
   return {
-    title: `${artist.displayName} – ${categoryLabel(artist.category)} i ${artist.city}`,
+    title: `${artist.displayName} – ${categoryLabel(artist.category)} in ${artist.city}`,
     description: artist.tagline || artist.bio.slice(0, 160),
   };
 }
@@ -34,9 +34,9 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
     <div className="mx-auto max-w-6xl px-4 pt-10 pb-28 sm:px-6 lg:pb-10">
       {!artist.published && (
         <p className="card mb-6 border-accent/40 p-4 text-sm">
-          Din profil är dold och syns inte i sökningar.{" "}
+          Your profile is hidden and doesn’t show up in search.{" "}
           <Link href="/dashboard/profile" className="text-accent underline">
-            Publicera den
+            Publish it
           </Link>
         </p>
       )}
@@ -51,7 +51,7 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
         />
         <div className="flex-1">
           <p className="text-sm text-muted">
-            {categoryLabel(artist.category)} · {artist.city} · reser upp till {artist.travelRadiusKm} km
+            {categoryLabel(artist.category)} · {artist.city} · travels up to {artist.travelRadiusKm} km
           </p>
           <h1 className="mt-1 text-4xl font-bold tracking-tight sm:text-5xl">{artist.displayName}</h1>
           {artist.tagline && <p className="mt-2 text-lg text-muted">{artist.tagline}</p>}
@@ -59,7 +59,7 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
             <Rating value={avgRating} count={reviews.length} />
             {isOwner && (
               <Link href="/dashboard/profile" className="chip border-accent/40 text-accent">
-                Redigera profil
+                Edit profile
               </Link>
             )}
           </div>
@@ -69,20 +69,20 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_380px]">
         <div className="space-y-12">
           <section>
-            <h2 className="mb-4 text-xl font-semibold">Lyssna</h2>
+            <h2 className="mb-4 text-xl font-semibold">Listen</h2>
             {tracks.length > 0 ? (
               <TrackList tracks={tracks} />
             ) : (
               <p className="card p-6 text-sm text-muted">
                 {isOwner ? (
                   <>
-                    Du har inga ljudklipp än.{" "}
+                    You don’t have any clips yet.{" "}
                     <Link href="/dashboard/sound" className="text-accent underline">
-                      Lägg till ditt första
+                      Add your first
                     </Link>
                   </>
                 ) : (
-                  "Inga ljudklipp uppladdade än."
+                  "No clips uploaded yet."
                 )}
               </p>
             )}
@@ -90,7 +90,7 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
 
           {artist.bio && (
             <section>
-              <h2 className="mb-4 text-xl font-semibold">Om {artist.displayName}</h2>
+              <h2 className="mb-4 text-xl font-semibold">About {artist.displayName}</h2>
               <p className="whitespace-pre-line text-muted">{artist.bio}</p>
             </section>
           )}
@@ -98,7 +98,7 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
           <section className="grid gap-6 sm:grid-cols-2">
             {artist.genres.length > 0 && (
               <div>
-                <h3 className="label">Genrer</h3>
+                <h3 className="label">Genres</h3>
                 <div className="flex flex-wrap gap-2">
                   {artist.genres.map((g) => (
                     <Link key={g} href={`/search?genre=${encodeURIComponent(g)}`} className="chip hover:border-accent hover:text-accent">
@@ -110,7 +110,7 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
             )}
             {artist.eventTypes.length > 0 && (
               <div>
-                <h3 className="label">Spelar gärna på</h3>
+                <h3 className="label">Happy to play</h3>
                 <div className="flex flex-wrap gap-2">
                   {artist.eventTypes.map((e) => (
                     <span key={e} className="chip">
@@ -124,14 +124,14 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
 
           {artist.equipment && (
             <section>
-              <h2 className="mb-4 text-xl font-semibold">Ingår i priset</h2>
+              <h2 className="mb-4 text-xl font-semibold">Included in the price</h2>
               <p className="card whitespace-pre-line p-5 text-sm text-muted">{artist.equipment}</p>
             </section>
           )}
 
           {addons.length > 0 && (
             <section>
-              <h2 className="mb-4 text-xl font-semibold">Tillägg</h2>
+              <h2 className="mb-4 text-xl font-semibold">Add-ons</h2>
               <ul className="card divide-y divide-border">
                 {addons.map((a) => (
                   <li key={a.id} className="flex items-start justify-between gap-4 p-4">
@@ -141,7 +141,7 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
                     </div>
                     <p className="shrink-0 text-sm">
                       {formatSek(a.price)}
-                      {a.priceType === "per_hour" && <span className="text-muted">/tim</span>}
+                      {a.priceType === "per_hour" && <span className="text-muted">/hr</span>}
                     </p>
                   </li>
                 ))}
@@ -151,7 +151,7 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
 
           <section>
             <h2 className="mb-4 text-xl font-semibold">
-              Omdömen {reviews.length > 0 && <span className="text-muted">({reviews.length})</span>}
+              Reviews {reviews.length > 0 && <span className="text-muted">({reviews.length})</span>}
             </h2>
             {reviews.length > 0 ? (
               <ul className="space-y-4">
@@ -164,13 +164,13 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
                     <p className="mt-2 text-sm text-muted">{r.body}</p>
                     <p className="mt-3 text-xs text-muted/70">
                       {formatDateTime(r.createdAt)}
-                      {r.bookingId && " · Verifierad bokning"}
+                      {r.bookingId && " · Verified booking"}
                     </p>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-muted">Inga omdömen än. Omdömen kan bara lämnas efter en genomförd bokning.</p>
+              <p className="text-sm text-muted">No reviews yet. Reviews can only be left after a completed booking.</p>
             )}
           </section>
         </div>
@@ -193,11 +193,11 @@ export default async function ArtistPage(props: PageProps<"/artists/[slug]">) {
       <div className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-between gap-4 border-t border-border bg-background/95 px-4 py-3 backdrop-blur lg:hidden">
         <p>
           <span className="font-bold">{formatSek(artist.hourlyRate)}</span>
-          <span className="text-sm text-muted"> / timme</span>
+          <span className="text-sm text-muted"> / hour</span>
         </p>
         {!isOwner && (
           <a href="#boka" className="btn-primary">
-            Boka
+            Book
           </a>
         )}
       </div>

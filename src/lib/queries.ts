@@ -3,7 +3,7 @@ import { alias } from "drizzle-orm/sqlite-core";
 import { CATEGORY_IDS, type CategoryId } from "@/lib/constants";
 import { db, schema } from "@/lib/db";
 import { todayInSweden } from "@/lib/format";
-import { distanceKm, findCity } from "@/lib/geo";
+import { approximateLocation, distanceKm, findCity, inBounds, parseBounds } from "@/lib/geo";
 
 const { artists, reviews, tracks, blockedDates, bookings, users, addons } = schema;
 
@@ -62,6 +62,9 @@ export type ArtistCardData = {
   reviewCount: number;
   trackCount: number;
   distanceKm: number | null;
+  /** Approximate pin position for the map, never the artist's exact location. */
+  mapLat: number;
+  mapLng: number;
 };
 
 export type SearchFilters = {
@@ -74,6 +77,8 @@ export type SearchFilters = {
   maxPrice?: string;
   date?: string;
   q?: string;
+  /** "south,west,north,east" from "Search this area" on the map. */
+  bounds?: string;
 };
 
 /** Artists that have neither blocked the date nor accepted another booking on it. */
@@ -86,7 +91,7 @@ export function resolveOrigin(filters: Pick<SearchFilters, "city" | "lat" | "lng
   const lat = Number(filters.lat);
   const lng = Number(filters.lng);
   if (filters.lat && filters.lng && Number.isFinite(lat) && Number.isFinite(lng)) {
-    return { lat, lng, label: "din plats" };
+    return { lat, lng, label: "you" };
   }
   const city = findCity(filters.city);
   return city ? { lat: city.lat, lng: city.lng, label: city.name } : null;
@@ -121,7 +126,9 @@ export async function searchArtists(filters: SearchFilters) {
     .leftJoin(trackStats, eq(trackStats.artistId, artists.id))
     .where(and(...conditions));
 
-  const origin = resolveOrigin(filters);
+  const bounds = parseBounds(filters.bounds);
+  // A map-area search replaces the city/location search.
+  const origin = bounds ? null : resolveOrigin(filters);
   const radius = Number(filters.radius);
   const hasRadius = Boolean(filters.radius) && Number.isFinite(radius) && radius > 0;
 
@@ -133,7 +140,9 @@ export async function searchArtists(filters: SearchFilters) {
       if (distance > row.travelRadiusKm) continue;
       if (hasRadius && distance > radius) continue;
     }
-    results.push(toCard(row, distance));
+    const card = toCard(row, distance);
+    if (bounds && !inBounds({ lat: card.mapLat, lng: card.mapLng }, bounds)) continue;
+    results.push(card);
   }
 
   results.sort((a, b) => {
@@ -143,15 +152,18 @@ export async function searchArtists(filters: SearchFilters) {
     return (b.avgRating ?? 0) - (a.avgRating ?? 0) || b.reviewCount - a.reviewCount;
   });
 
-  return { results, origin };
+  return { results, origin, bounds };
 }
 
-type CardRow = Omit<ArtistCardData, "distanceKm" | "reviewCount" | "trackCount"> & {
+type CardRow = Omit<ArtistCardData, "distanceKm" | "reviewCount" | "trackCount" | "mapLat" | "mapLng"> & {
+  lat: number;
+  lng: number;
   reviewCount: number | null;
   trackCount: number | null;
 };
 
 function toCard(row: CardRow, distance: number | null): ArtistCardData {
+  const pin = approximateLocation(row.id, row);
   return {
     id: row.id,
     slug: row.slug,
@@ -168,6 +180,8 @@ function toCard(row: CardRow, distance: number | null): ArtistCardData {
     reviewCount: Number(row.reviewCount ?? 0),
     trackCount: Number(row.trackCount ?? 0),
     distanceKm: distance === null ? null : Math.round(distance),
+    mapLat: pin.lat,
+    mapLng: pin.lng,
   };
 }
 

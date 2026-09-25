@@ -63,3 +63,66 @@ body {
 @utility chip {
   @apply inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs text-muted;
 }
+
+/* Airbnb-style price pins and popups on the search map. */
+.price-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  padding: 4px 10px;
+  font: 600 12px/1.2 var(--font-geist-sans), system-ui, sans-serif;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.45);
+  cursor: pointer;
+  transition: transform 150ms ease, background 150ms ease;
+}
+.price-pin:hover,
+.price-pin-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-foreground);
+  transform: translate(-50%, -50%) scale(1.08);
+}
+/* Bring a pin to the front on hover so overlapping pins stay clickable. */
+.leaflet-marker-icon:hover {
+  z-index: 10000 !important;
+}
+/* Doubled selectors: leaflet.css loads after this file and would otherwise win. */
+.leaflet-container.leaflet-container {
+  background: #0e0e13;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+.artist-popup .leaflet-popup-content a {
+  color: var(--foreground);
+}
+.artist-popup .leaflet-popup-content p {
+  margin: 0;
+}
+.artist-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: 1rem;
+  background: var(--card);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.6);
+}
+.artist-popup .leaflet-popup-content {
+  margin: 0;
+  width: auto !important;
+}
+.artist-popup .leaflet-popup-tip {
+  background: var(--card);
+}
+.leaflet-control-zoom a {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+.leaflet-control-attribution {
+  background: rgb(11 11 16 / 0.7) !important;
+  color: var(--muted) !important;
+}
+.leaflet-control-attribution a {
+  color: var(--muted) !important;
+}

@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const LINKS = [
-  { href: "/dashboard", label: "Bokningar" },
-  { href: "/dashboard/profile", label: "Profil" },
-  { href: "/dashboard/sound", label: "Ljud" },
-  { href: "/dashboard/extras", label: "Tillägg & kalender" },
+  { href: "/dashboard", label: "Bookings" },
+  { href: "/dashboard/profile", label: "Profile" },
+  { href: "/dashboard/sound", label: "Sound" },
+  { href: "/dashboard/extras", label: "Add-ons & calendar" },
 ] as const;
 
 export function DashboardNav({ profileSlug }: { profileSlug: string | null }) {
@@ -27,7 +27,7 @@ export function DashboardNav({ profileSlug }: { profileSlug: string | null }) {
       ))}
       {profileSlug && (
         <Link href={`/artists/${profileSlug}`} className="ml-auto text-sm text-muted hover:text-accent">
-          Visa min profil →
+          View my profile →
         </Link>
       )}
     </nav>

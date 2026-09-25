@@ -9,9 +9,9 @@ import { db, schema } from "@/lib/db";
 import { firstIssue, type FormState } from "@/lib/form-state";
 
 const signupSchema = z.object({
-  name: z.string().trim().min(2, "Ange ditt namn.").max(80),
-  email: z.string().trim().toLowerCase().pipe(z.email("Ange en giltig e-postadress.")),
-  password: z.string().min(8, "Lösenordet måste vara minst 8 tecken.").max(200),
+  name: z.string().trim().min(2, "Enter your name.").max(80),
+  email: z.string().trim().toLowerCase().pipe(z.email("Enter a valid email address.")),
+  password: z.string().min(8, "Password must be at least 8 characters.").max(200),
   role: z.enum(["booker", "artist"]),
 });
 
@@ -21,7 +21,7 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
   const { name, email, password, role } = parsed.data;
 
   const existing = await db.query.users.findFirst({ where: eq(schema.users.email, email) });
-  if (existing) return { error: "Det finns redan ett konto med den e-postadressen." };
+  if (existing) return { error: "An account with that email already exists." };
 
   const [user] = await db
     .insert(schema.users)
@@ -39,11 +39,11 @@ const loginSchema = z.object({
 
 export async function login(_prev: FormState, formData: FormData): Promise<FormState> {
   const parsed = loginSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: "Fyll i e-post och lösenord." };
+  if (!parsed.success) return { error: "Enter your email and password." };
 
   const user = await db.query.users.findFirst({ where: eq(schema.users.email, parsed.data.email) });
   if (!user || !(await compare(parsed.data.password, user.passwordHash))) {
-    return { error: "Fel e-post eller lösenord." };
+    return { error: "Wrong email or password." };
   }
 
   await createSession(user.id);

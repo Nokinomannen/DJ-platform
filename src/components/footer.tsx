@@ -8,13 +8,13 @@ export function Footer() {
         <Logo />
         <div className="flex gap-6">
           <Link href="/search" className="hover:text-foreground">
-            Hitta artister
+            Find artists
           </Link>
           <Link href="/signup?role=artist" className="hover:text-foreground">
-            För artister
+            For artists
           </Link>
         </div>
-        <p>Boka musik utan DM-kaos.</p>
+        <p>Book music without the DM chaos.</p>
       </div>
     </footer>
   );

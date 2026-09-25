@@ -1,9 +1,9 @@
 export const CATEGORIES = [
-  { id: "dj", label: "DJ", plural: "DJs", blurb: "Från bröllop till klubbnätter" },
-  { id: "band", label: "Band", plural: "Band", blurb: "Liveband för alla tillfällen" },
-  { id: "musician", label: "Livemusiker", plural: "Livemusiker", blurb: "Sångare, sax, gitarr och mer" },
-  { id: "sound", label: "Ljud & ljus", plural: "Ljud & ljus", blurb: "Hyr PA, ljus och tekniker" },
-  { id: "planner", label: "Festfixare", plural: "Festfixare", blurb: "De som fixar helheten" },
+  { id: "dj", label: "DJ", plural: "DJs", blurb: "From weddings to club nights" },
+  { id: "band", label: "Band", plural: "Bands", blurb: "Live bands for any occasion" },
+  { id: "musician", label: "Live musician", plural: "Live musicians", blurb: "Singers, sax, guitar and more" },
+  { id: "sound", label: "Sound & lights", plural: "Sound & lights", blurb: "Rent PA, lights and techs" },
+  { id: "planner", label: "Party planner", plural: "Party planners", blurb: "The people who handle it all" },
 ] as const;
 
 export type CategoryId = (typeof CATEGORIES)[number]["id"];
@@ -27,20 +27,20 @@ export const GENRES = [
   "Dancehall",
   "Drum & bass",
   "Funk & soul",
-  "80-tal",
+  "80s",
   "Jazz",
-  "Akustiskt",
+  "Acoustic",
   "Latin",
 ] as const;
 
 export const EVENT_TYPES = [
-  { id: "wedding", label: "Bröllop" },
-  { id: "birthday", label: "Födelsedag" },
-  { id: "corporate", label: "Företagsevent" },
-  { id: "private", label: "Privat fest" },
-  { id: "club", label: "Klubb/bar" },
-  { id: "student", label: "Studentfest" },
-  { id: "other", label: "Annat" },
+  { id: "wedding", label: "Wedding" },
+  { id: "birthday", label: "Birthday" },
+  { id: "corporate", label: "Corporate event" },
+  { id: "private", label: "Private party" },
+  { id: "club", label: "Club/bar" },
+  { id: "student", label: "Student party" },
+  { id: "other", label: "Other" },
 ] as const;
 
 export function eventTypeLabel(id: string) {
@@ -48,8 +48,8 @@ export function eventTypeLabel(id: string) {
 }
 
 export const BOOKING_STATUS_LABELS = {
-  pending: "Väntar på svar",
-  accepted: "Bekräftad",
-  declined: "Nekad",
-  cancelled: "Avbokad",
+  pending: "Awaiting reply",
+  accepted: "Confirmed",
+  declined: "Declined",
+  cancelled: "Cancelled",
 } as const;

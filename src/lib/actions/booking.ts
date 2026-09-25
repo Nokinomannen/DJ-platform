@@ -16,32 +16,32 @@ const { bookings, artists, messages, reviews } = schema;
 
 const bookingSchema = z.object({
   artistId: z.string().min(1),
-  eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Välj ett datum."),
-  startTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Välj en starttid."),
+  eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Pick a date."),
+  startTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Pick a start time."),
   hours: z.coerce.number().int().min(MIN_BOOKING_HOURS).max(MAX_BOOKING_HOURS),
-  eventType: z.enum(EVENT_TYPES.map((e) => e.id) as [string, ...string[]], "Välj typ av event."),
-  guests: z.coerce.number("Ange antal gäster.").int().min(1, "Ange antal gäster.").max(10000),
-  location: z.string().trim().min(2, "Ange plats för eventet.").max(160),
+  eventType: z.enum(EVENT_TYPES.map((e) => e.id) as [string, ...string[]], "Pick an event type."),
+  guests: z.coerce.number("Enter the number of guests.").int().min(1, "Enter the number of guests.").max(10000),
+  location: z.string().trim().min(2, "Enter the event location.").max(160),
   message: z.string().trim().max(2000).default(""),
 });
 
 export async function requestBooking(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await getCurrentUser();
-  if (!user) return { error: "Logga in för att skicka en förfrågan." };
+  if (!user) return { error: "Log in to send a request." };
 
   const parsed = bookingSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: firstIssue(parsed.error) };
   const input = parsed.data;
 
-  if (input.eventDate < todayInSweden()) return { error: "Datumet har redan passerat." };
+  if (input.eventDate < todayInSweden()) return { error: "That date has already passed." };
 
   const artist = await db.query.artists.findFirst({
     where: and(eq(artists.id, input.artistId), eq(artists.published, true)),
   });
-  if (!artist) return { error: "Artisten finns inte längre." };
-  if (artist.userId === user.id) return { error: "Du kan inte boka dig själv." };
+  if (!artist) return { error: "This artist is no longer available." };
+  if (artist.userId === user.id) return { error: "You can't book yourself." };
   if (!(await isArtistAvailable(artist.id, input.eventDate))) {
-    return { error: "Artisten är tyvärr upptagen det datumet." };
+    return { error: "Sorry, the artist is busy on that date." };
   }
 
   // Prices are always recomputed server-side from the artist's current add-ons.
@@ -82,10 +82,10 @@ export async function respondToBooking(
   decision: "accepted" | "declined",
 ): Promise<FormState> {
   const user = await getCurrentUser();
-  if (!user) return { error: "Du är inte inloggad." };
+  if (!user) return { error: "You're not logged in." };
   const data = await getBookingForUser(bookingId, user.id);
-  if (!data?.isArtist) return { error: "Du har inte behörighet att svara på den här förfrågan." };
-  if (data.booking.status !== "pending") return { error: "Förfrågan är redan besvarad." };
+  if (!data?.isArtist) return { error: "You're not allowed to reply to this request." };
+  if (data.booking.status !== "pending") return { error: "This request has already been answered." };
 
   if (decision === "accepted") {
     const [clash] = await db
@@ -99,7 +99,7 @@ export async function respondToBooking(
           ne(bookings.id, bookingId),
         ),
       );
-    if (clash) return { error: "Du har redan en bekräftad bokning det datumet." };
+    if (clash) return { error: "You already have a confirmed booking on that date." };
   }
 
   await db
@@ -109,56 +109,56 @@ export async function respondToBooking(
 
   revalidatePath(`/bookings/${bookingId}`);
   revalidatePath("/dashboard");
-  return { ok: decision === "accepted" ? "Bokningen är bekräftad." : "Förfrågan är nekad." };
+  return { ok: decision === "accepted" ? "Booking confirmed." : "Request declined." };
 }
 
 export async function cancelBooking(bookingId: string): Promise<FormState> {
   const user = await getCurrentUser();
-  if (!user) return { error: "Du är inte inloggad." };
+  if (!user) return { error: "You're not logged in." };
   const data = await getBookingForUser(bookingId, user.id);
-  if (!data?.isBooker) return { error: "Bara den som bokat kan avboka." };
+  if (!data?.isBooker) return { error: "Only the person who booked can cancel." };
   const { status, eventDate } = data.booking;
-  if (status !== "pending" && status !== "accepted") return { error: "Bokningen kan inte avbokas." };
-  if (eventDate < todayInSweden()) return { error: "Eventet har redan varit." };
+  if (status !== "pending" && status !== "accepted") return { error: "This booking can't be cancelled." };
+  if (eventDate < todayInSweden()) return { error: "The event has already happened." };
 
   await db.update(bookings).set({ status: "cancelled" }).where(eq(bookings.id, bookingId));
   revalidatePath(`/bookings/${bookingId}`);
   revalidatePath("/dashboard");
-  return { ok: "Bokningen är avbokad." };
+  return { ok: "Booking cancelled." };
 }
 
 const messageSchema = z.object({
-  body: z.string().trim().min(1, "Skriv ett meddelande.").max(2000),
+  body: z.string().trim().min(1, "Write a message.").max(2000),
 });
 
 export async function sendMessage(bookingId: string, _prev: FormState, formData: FormData): Promise<FormState> {
   const user = await getCurrentUser();
-  if (!user) return { error: "Du är inte inloggad." };
+  if (!user) return { error: "You're not logged in." };
   const data = await getBookingForUser(bookingId, user.id);
-  if (!data) return { error: "Bokningen hittades inte." };
+  if (!data) return { error: "Booking not found." };
 
   const parsed = messageSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: firstIssue(parsed.error) };
 
   await db.insert(messages).values({ bookingId, senderId: user.id, body: parsed.data.body });
   revalidatePath(`/bookings/${bookingId}`);
-  return { ok: "Skickat." };
+  return { ok: "Sent." };
 }
 
 const reviewSchema = z.object({
-  rating: z.coerce.number().int().min(1, "Välj betyg.").max(5),
-  body: z.string().trim().min(10, "Skriv minst några ord.").max(1500),
+  rating: z.coerce.number().int().min(1, "Pick a rating.").max(5),
+  body: z.string().trim().min(10, "Write at least a few words.").max(1500),
 });
 
 export async function submitReview(bookingId: string, _prev: FormState, formData: FormData): Promise<FormState> {
   const user = await getCurrentUser();
-  if (!user) return { error: "Du är inte inloggad." };
+  if (!user) return { error: "You're not logged in." };
   const data = await getBookingForUser(bookingId, user.id);
-  if (!data?.isBooker) return { error: "Bara den som bokat kan lämna omdöme." };
+  if (!data?.isBooker) return { error: "Only the person who booked can leave a review." };
   if (data.booking.status !== "accepted" || data.booking.eventDate >= todayInSweden()) {
-    return { error: "Du kan lämna omdöme efter genomfört event." };
+    return { error: "You can leave a review after the event." };
   }
-  if (data.review) return { error: "Du har redan lämnat ett omdöme." };
+  if (data.review) return { error: "You've already left a review." };
 
   const parsed = reviewSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: firstIssue(parsed.error) };
@@ -172,5 +172,5 @@ export async function submitReview(bookingId: string, _prev: FormState, formData
   });
   revalidatePath(`/bookings/${bookingId}`);
   revalidatePath(`/artists/${data.artist.slug}`);
-  return { ok: "Tack för ditt omdöme!" };
+  return { ok: "Thanks for your review!" };
 }

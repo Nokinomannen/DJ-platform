@@ -5,7 +5,7 @@ import { ActionForm, SubmitButton } from "@/components/action-form";
 import { signup } from "@/lib/actions/auth";
 import { getCurrentUser, safeNextPath } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Skapa konto" };
+export const metadata: Metadata = { title: "Sign up" };
 
 export default async function SignupPage(props: PageProps<"/signup">) {
   const { role, next } = await props.searchParams;
@@ -16,22 +16,22 @@ export default async function SignupPage(props: PageProps<"/signup">) {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="text-3xl font-bold tracking-tight">
-        {defaultRole === "artist" ? "Skapa din artistprofil" : "Skapa konto"}
+        {defaultRole === "artist" ? "Create your artist profile" : "Create an account"}
       </h1>
       <p className="mt-2 text-muted">
-        Har du redan ett konto?{" "}
+        Already have an account?{" "}
         <Link href={`/login?next=${encodeURIComponent(nextPath)}`} className="text-accent underline">
-          Logga in
+          Log in
         </Link>
       </p>
       <ActionForm action={signup} className="card mt-8 space-y-4 p-6">
         <input type="hidden" name="next" value={nextPath} />
         <fieldset>
-          <legend className="label">Jag vill</legend>
+          <legend className="label">I want to</legend>
           <div className="grid grid-cols-2 gap-2">
             {[
-              ["booker", "Boka artister", "Till fest, bröllop eller event"],
-              ["artist", "Bli bokad", "DJ, musiker, ljud eller festfixare"],
+              ["booker", "Book artists", "For a party, wedding or event"],
+              ["artist", "Get booked", "DJ, musician, sound or party planner"],
             ].map(([value, title, hint]) => (
               <label
                 key={value}
@@ -46,19 +46,19 @@ export default async function SignupPage(props: PageProps<"/signup">) {
         </fieldset>
         <div>
           <label className="label" htmlFor="name">
-            Namn
+            Name
           </label>
           <input id="name" name="name" autoComplete="name" required className="input" />
         </div>
         <div>
           <label className="label" htmlFor="email">
-            E-post
+            Email
           </label>
           <input id="email" name="email" type="email" autoComplete="email" required className="input" />
         </div>
         <div>
           <label className="label" htmlFor="password">
-            Lösenord
+            Password
           </label>
           <input
             id="password"
@@ -70,8 +70,8 @@ export default async function SignupPage(props: PageProps<"/signup">) {
             className="input"
           />
         </div>
-        <SubmitButton className="btn-primary w-full" pendingText="Skapar konto…">
-          Skapa konto
+        <SubmitButton className="btn-primary w-full" pendingText="Creating account…">
+          Create account
         </SubmitButton>
       </ActionForm>
     </div>

@@ -1,8 +1,8 @@
-export type City = { name: string; lat: number; lng: number };
+export type City = { name: string; lat: number; lng: number; aliases?: string[] };
 
 export const CITIES: City[] = [
   { name: "Stockholm", lat: 59.3293, lng: 18.0686 },
-  { name: "Göteborg", lat: 57.7089, lng: 11.9746 },
+  { name: "Gothenburg", lat: 57.7089, lng: 11.9746, aliases: ["Göteborg"] },
   { name: "Malmö", lat: 55.605, lng: 13.0038 },
   { name: "Uppsala", lat: 59.8586, lng: 17.6389 },
   { name: "Västerås", lat: 59.6099, lng: 16.5448 },
@@ -44,7 +44,7 @@ export function findCity(name: string | undefined | null): City | undefined {
   if (!name) return undefined;
   const needle = normalize(name);
   if (!needle) return undefined;
-  return CITIES.find((c) => normalize(c.name) === needle);
+  return CITIES.find((c) => [c.name, ...(c.aliases ?? [])].some((n) => normalize(n) === needle));
 }
 
 const EARTH_RADIUS_KM = 6371;
@@ -61,4 +61,40 @@ export function distanceKm(
     Math.sin(dLat / 2) ** 2 +
     Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
   return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
+}
+
+/**
+ * Deterministically offsets a point by 0.8–3.5 km based on a seed (the artist id), so pins in the
+ * same city don't stack and an artist's exact location is never shown, like Airbnb's approximate pins.
+ */
+export function approximateLocation(seed: string, point: { lat: number; lng: number }) {
+  let hash = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  hash >>>= 0;
+  const angle = ((hash % 3600) / 3600) * 2 * Math.PI;
+  const km = 0.8 + ((Math.floor(hash / 3600) % 1000) / 1000) * 2.7;
+  const kmPerDegLat = 111.32;
+  return {
+    lat: point.lat + (km / kmPerDegLat) * Math.cos(angle),
+    lng: point.lng + (km / (kmPerDegLat * Math.cos((point.lat * Math.PI) / 180))) * Math.sin(angle),
+  };
+}
+
+export type Bounds = { south: number; west: number; north: number; east: number };
+
+/** Parses a "south,west,north,east" string from the URL. */
+export function parseBounds(value: string | undefined): Bounds | null {
+  if (!value) return null;
+  const parts = value.split(",").map(Number);
+  if (parts.length !== 4 || parts.some((n) => !Number.isFinite(n))) return null;
+  const [south, west, north, east] = parts as [number, number, number, number];
+  if (south >= north || west >= east) return null;
+  return { south, west, north, east };
+}
+
+export function inBounds(point: { lat: number; lng: number }, b: Bounds) {
+  return point.lat >= b.south && point.lat <= b.north && point.lng >= b.west && point.lng <= b.east;
 }

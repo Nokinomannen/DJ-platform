@@ -29,14 +29,14 @@ export default async function Home() {
           }}
         />
         <div className="relative mx-auto max-w-6xl px-4 pt-16 pb-14 sm:px-6 sm:pt-24">
-          <p className="chip mb-5 border-accent/40 text-accent">DJs · band · ljud · festfixare</p>
+          <p className="chip mb-5 border-accent/40 text-accent">DJs · bands · sound · party planners</p>
           <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
-            Boka musiken till festen.
-            <span className="block text-muted">Utan att leta i DM:s.</span>
+            Book the music for your party.
+            <span className="block text-muted">No more digging through DMs.</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted">
-            Hitta artister nära dig, lyssna på riktiga set, se priset direkt och lägg till ljud och ljus i samma
-            bokning.
+            Find artists near you, listen to real sets, see the price up front and add sound and lights to the same
+            booking.
           </p>
           <div className="mt-10 max-w-4xl">
             <SearchForm />
@@ -65,9 +65,9 @@ export default async function Home() {
       {featured.length > 0 && (
         <section className="mx-auto mt-20 max-w-6xl px-4 sm:px-6">
           <div className="mb-6 flex items-end justify-between">
-            <h2 className="text-2xl font-bold tracking-tight">Populära just nu</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Popular right now</h2>
             <Link href="/search" className="text-sm text-muted hover:text-accent">
-              Visa alla →
+              See all →
             </Link>
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -79,12 +79,12 @@ export default async function Home() {
       )}
 
       <section className="mx-auto mt-24 max-w-6xl px-4 sm:px-6">
-        <h2 className="text-2xl font-bold tracking-tight">Så funkar det</h2>
+        <h2 className="text-2xl font-bold tracking-tight">How it works</h2>
         <div className="mt-6 grid gap-5 sm:grid-cols-3">
           {[
-            ["1", "Hitta och lyssna", "Filtrera på stad, datum, genre och pris. Lyssna på mixar direkt i profilen."],
-            ["2", "Bygg din bokning", "Välj antal timmar och lägg till PA, ljus eller mikrofon. Du ser totalpriset direkt."],
-            ["3", "Skicka förfrågan", "Artisten bekräftar, ni chattar om detaljerna och efter festen lämnar du omdöme."],
+            ["1", "Find and listen", "Filter by city, date, genre and price, or browse the map. Listen to mixes right on the profile."],
+            ["2", "Build your booking", "Pick the hours and add a PA, lights or a mic. You see the total price instantly."],
+            ["3", "Send a request", "The artist confirms, you chat about the details, and after the party you leave a review."],
           ].map(([n, title, body]) => (
             <div key={n} className="card p-6">
               <span className="font-mono text-sm text-accent">0{n}</span>
@@ -101,18 +101,18 @@ export default async function Home() {
             aria-hidden
             className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-accent/20 blur-3xl"
           />
-          <p className="font-mono text-sm text-accent">För artister</p>
+          <p className="font-mono text-sm text-accent">For artists</p>
           <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight">
-            Din profil ersätter Instagram-bion och DM-inkorgen.
+            Your profile replaces the Instagram bio and the DM inbox.
           </h2>
           <ul className="mt-6 grid max-w-3xl gap-3 text-muted sm:grid-cols-2">
-            <li>✓ Ladda upp mixar eller länka SoundCloud och Mixcloud</li>
-            <li>✓ Fasta priser och tillägg, inga fram-och-tillbaka-offerter</li>
-            <li>✓ Blockera datum och få bara förfrågningar du kan ta</li>
-            <li>✓ Verifierade omdömen från riktiga bokningar</li>
+            <li>✓ Upload mixes or link SoundCloud and Mixcloud</li>
+            <li>✓ Fixed prices and add-ons, no back-and-forth quotes</li>
+            <li>✓ Block dates and only get requests you can take</li>
+            <li>✓ Verified reviews from real bookings</li>
           </ul>
           <Link href="/signup?role=artist" className="btn-primary mt-8">
-            Skapa artistprofil gratis
+            Create a free artist profile
           </Link>
         </div>
       </section>

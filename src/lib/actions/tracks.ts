@@ -34,7 +34,7 @@ function refresh(slug: string) {
   revalidatePath(`/artists/${slug}`);
 }
 
-const titleSchema = z.string().trim().min(1, "Ge klippet en titel.").max(80);
+const titleSchema = z.string().trim().min(1, "Give the clip a title.").max(80);
 
 export async function uploadTrack(_prev: FormState, formData: FormData): Promise<FormState> {
   const artist = await requireOwnArtist();
@@ -42,15 +42,15 @@ export async function uploadTrack(_prev: FormState, formData: FormData): Promise
   if (!title.success) return { error: firstIssue(title.error) };
 
   const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) return { error: "Välj en ljudfil." };
-  if (!AUDIO_TYPES[file.type]) return { error: "Filen måste vara MP3, M4A, AAC, WAV eller OGG." };
-  if (file.size > MAX_AUDIO_BYTES) return { error: "Filen får vara max 25 MB. Längre mixar kan du länka från SoundCloud eller Mixcloud." };
-  if (!(await hasRoom(artist.id))) return { error: `Du kan ha max ${MAX_TRACKS} klipp.` };
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose an audio file." };
+  if (!AUDIO_TYPES[file.type]) return { error: "The file must be MP3, M4A, AAC, WAV or OGG." };
+  if (file.size > MAX_AUDIO_BYTES) return { error: "The file can be at most 25 MB. Link longer mixes from SoundCloud or Mixcloud." };
+  if (!(await hasRoom(artist.id))) return { error: `You can have at most ${MAX_TRACKS} clips.` };
 
   const key = await saveUpload(file, AUDIO_TYPES);
   await db.insert(tracks).values({ artistId: artist.id, title: title.data, source: "upload", url: key });
   refresh(artist.slug);
-  return { ok: "Klippet är uppladdat." };
+  return { ok: "Clip uploaded." };
 }
 
 export async function addTrackLink(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -60,12 +60,12 @@ export async function addTrackLink(_prev: FormState, formData: FormData): Promis
 
   const url = String(formData.get("url") ?? "").trim();
   const embed = parseEmbed(url);
-  if (!embed) return { error: "Länken måste gå till SoundCloud, Mixcloud, YouTube eller Spotify." };
-  if (!(await hasRoom(artist.id))) return { error: `Du kan ha max ${MAX_TRACKS} klipp.` };
+  if (!embed) return { error: "The link must point to SoundCloud, Mixcloud, YouTube or Spotify." };
+  if (!(await hasRoom(artist.id))) return { error: `You can have at most ${MAX_TRACKS} clips.` };
 
   await db.insert(tracks).values({ artistId: artist.id, title: title.data, source: embed.source, url });
   refresh(artist.slug);
-  return { ok: "Länken är tillagd." };
+  return { ok: "Link added." };
 }
 
 export async function deleteTrack(trackId: string) {

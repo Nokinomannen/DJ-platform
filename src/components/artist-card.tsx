@@ -27,7 +27,7 @@ export function ArtistCard({ artist }: { artist: ArtistCardData }) {
             <svg viewBox="0 0 24 24" className="size-3" fill="currentColor" aria-hidden>
               <path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5Z" />
             </svg>
-            {artist.trackCount} klipp
+            {artist.trackCount} {artist.trackCount === 1 ? "clip" : "clips"}
           </span>
         )}
       </div>
@@ -47,11 +47,11 @@ export function ArtistCard({ artist }: { artist: ArtistCardData }) {
         <div className="mt-auto flex items-end justify-between pt-2 text-sm">
           <span className="text-muted">
             {artist.city}
-            {artist.distanceKm !== null && ` · ${artist.distanceKm} km bort`}
+            {artist.distanceKm !== null && artist.distanceKm >= 1 && ` · ${artist.distanceKm} km away`}
           </span>
           <span>
             <span className="font-semibold">{formatSek(artist.hourlyRate)}</span>
-            <span className="text-muted">/tim</span>
+            <span className="text-muted">/hr</span>
           </span>
         </div>
       </div>

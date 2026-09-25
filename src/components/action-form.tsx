@@ -59,7 +59,7 @@ export function FormMessage() {
 
 export function SubmitButton({
   children,
-  pendingText = "Sparar…",
+  pendingText = "Saving…",
   className = "btn-primary",
   disabled,
 }: {

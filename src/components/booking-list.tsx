@@ -38,7 +38,7 @@ export function BookingList({
                 <span className="text-muted"> · {eventTypeLabel(b.eventType)}</span>
               </p>
               <p className="text-sm text-muted">
-                {formatDate(b.eventDate)} kl {b.startTime} · {b.hours} tim · {b.location}
+                {formatDate(b.eventDate)} at {b.startTime} · {b.hours} hrs · {b.location}
               </p>
             </div>
             <div className="flex items-center gap-3">

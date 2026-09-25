@@ -16,16 +16,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Gigga – boka DJ, band och ljud nära dig",
+    default: "Gigga – book DJs, bands and sound near you",
     template: "%s · Gigga",
   },
   description:
-    "Hitta DJs, livemusiker, ljud och festfixare nära dig. Lyssna på riktiga set, se priser direkt och skicka en bokningsförfrågan.",
+    "Find DJs, live musicians, sound and party planners near you. Listen to real sets, see prices up front and send a booking request.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="sv" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">
         <Header />
         <main className="flex-1">{children}</main>

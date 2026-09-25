@@ -18,13 +18,13 @@ const { artists, addons, blockedDates, users } = schema;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 const profileSchema = z.object({
-  displayName: z.string().trim().min(2, "Ange artistnamn.").max(60),
-  category: z.enum(CATEGORY_IDS, "Välj kategori."),
+  displayName: z.string().trim().min(2, "Enter your artist name.").max(60),
+  category: z.enum(CATEGORY_IDS, "Pick a category."),
   tagline: z.string().trim().max(120).default(""),
   bio: z.string().trim().max(3000).default(""),
-  city: z.string().refine((c) => Boolean(findCity(c)), "Välj en stad från listan."),
+  city: z.string().refine((c) => Boolean(findCity(c)), "Pick a city from the list."),
   travelRadiusKm: z.coerce.number().int().min(0).max(2000),
-  hourlyRate: z.coerce.number("Ange timpris.").int().min(100, "Timpriset måste vara minst 100 kr.").max(100000),
+  hourlyRate: z.coerce.number("Enter an hourly rate.").int().min(100, "The hourly rate must be at least SEK 100.").max(100000),
   minHours: z.coerce.number().int().min(1).max(12),
   equipment: z.string().trim().max(1500).default(""),
 });
@@ -62,8 +62,8 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
   let imageKey = existing?.imageKey ?? null;
   const image = formData.get("image");
   if (image instanceof File && image.size > 0) {
-    if (!IMAGE_TYPES[image.type]) return { error: "Bilden måste vara JPG, PNG eller WebP." };
-    if (image.size > MAX_IMAGE_BYTES) return { error: "Bilden får vara max 5 MB." };
+    if (!IMAGE_TYPES[image.type]) return { error: "The image must be JPG, PNG or WebP." };
+    if (image.size > MAX_IMAGE_BYTES) return { error: "The image can be at most 5 MB." };
     imageKey = await saveUpload(image, IMAGE_TYPES);
     if (existing?.imageKey) await deleteUpload(existing.imageKey);
   }
@@ -104,13 +104,13 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
 
   revalidatePath(`/artists/${slug}`);
   revalidatePath("/dashboard", "layout");
-  return { ok: existing ? "Profilen är sparad." : "Profilen är skapad! Lägg till ljud så att bokare kan lyssna." };
+  return { ok: existing ? "Profile saved." : "Profile created! Add some sound so bookers can listen." };
 }
 
 const addonSchema = z.object({
-  name: z.string().trim().min(2, "Ange namn på tillägget.").max(60),
+  name: z.string().trim().min(2, "Enter a name for the add-on.").max(60),
   description: z.string().trim().max(200).default(""),
-  price: z.coerce.number("Ange pris.").int().min(0).max(1000000),
+  price: z.coerce.number("Enter a price.").int().min(0).max(1000000),
   priceType: z.enum(["fixed", "per_hour"]),
 });
 
@@ -128,7 +128,7 @@ export async function addAddon(_prev: FormState, formData: FormData): Promise<Fo
   await db.insert(addons).values({ ...parsed.data, artistId: artist.id });
   revalidatePath("/dashboard/extras");
   revalidatePath(`/artists/${artist.slug}`);
-  return { ok: "Tillägget är sparat." };
+  return { ok: "Add-on saved." };
 }
 
 export async function deleteAddon(addonId: string) {
@@ -139,7 +139,7 @@ export async function deleteAddon(addonId: string) {
 }
 
 const dateSchema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Välj ett datum."),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Pick a date."),
 });
 
 export async function addBlockedDate(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -149,7 +149,7 @@ export async function addBlockedDate(_prev: FormState, formData: FormData): Prom
   await db.insert(blockedDates).values({ artistId: artist.id, date: parsed.data.date }).onConflictDoNothing();
   revalidatePath("/dashboard/extras");
   revalidatePath(`/artists/${artist.slug}`);
-  return { ok: "Datumet är blockerat." };
+  return { ok: "Date blocked." };
 }
 
 export async function removeBlockedDate(blockedId: string) {

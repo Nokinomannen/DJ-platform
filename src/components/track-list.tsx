@@ -4,7 +4,7 @@ import { mediaUrl } from "@/lib/media";
 import { AudioPlayer } from "./audio-player";
 
 const SOURCE_LABELS: Record<Track["source"], string> = {
-  upload: "Uppladdat",
+  upload: "Upload",
   soundcloud: "SoundCloud",
   mixcloud: "Mixcloud",
   youtube: "YouTube",

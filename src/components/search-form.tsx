@@ -18,7 +18,7 @@ export function SearchForm({ defaults = {} }: Props) {
 
   const useMyLocation = () => {
     if (!navigator.geolocation) {
-      setGeoError("Din webbläsare stöder inte platstjänster.");
+      setGeoError("Your browser doesn't support location services.");
       return;
     }
     setLocating(true);
@@ -30,7 +30,7 @@ export function SearchForm({ defaults = {} }: Props) {
         setLocating(false);
       },
       () => {
-        setGeoError("Kunde inte hämta din plats. Välj en stad i stället.");
+        setGeoError("Couldn't get your location. Pick a city instead.");
         setLocating(false);
       },
       { timeout: 10000 },
@@ -60,17 +60,17 @@ export function SearchForm({ defaults = {} }: Props) {
       <div className="relative flex items-center rounded-full px-4 py-2 hover:bg-card-hover">
         <div className="flex-1">
           <label htmlFor="search-city" className="block text-[11px] font-semibold tracking-wide uppercase">
-            Var
+            Where
           </label>
           <input
             id="search-city"
             list="city-list"
-            value={coords && !city ? "Nära mig" : city}
+            value={coords && !city ? "Near me" : city}
             onChange={(e) => {
               setCoords(null);
               setCity(e.target.value);
             }}
-            placeholder="Stad, t.ex. Stockholm"
+            placeholder="City, e.g. Stockholm"
             className="w-full bg-transparent text-sm placeholder:text-muted/70 focus:outline-none"
           />
           <datalist id="city-list">
@@ -84,12 +84,12 @@ export function SearchForm({ defaults = {} }: Props) {
           onClick={useMyLocation}
           className="ml-2 shrink-0 rounded-full border border-border px-3 py-1 text-xs text-muted hover:border-accent hover:text-accent"
         >
-          {locating ? "Hämtar…" : "Nära mig"}
+          {locating ? "Locating…" : "Near me"}
         </button>
       </div>
       <div className="rounded-full px-4 py-2 hover:bg-card-hover">
         <label htmlFor="search-category" className="block text-[11px] font-semibold tracking-wide uppercase">
-          Vad
+          What
         </label>
         <select
           id="search-category"
@@ -97,7 +97,7 @@ export function SearchForm({ defaults = {} }: Props) {
           defaultValue={defaults.category ?? ""}
           className="w-full bg-transparent text-sm focus:outline-none"
         >
-          <option value="">Alla kategorier</option>
+          <option value="">All categories</option>
           {CATEGORIES.map((c) => (
             <option key={c.id} value={c.id}>
               {c.label}
@@ -107,7 +107,7 @@ export function SearchForm({ defaults = {} }: Props) {
       </div>
       <div className="rounded-full px-4 py-2 hover:bg-card-hover">
         <label htmlFor="search-date" className="block text-[11px] font-semibold tracking-wide uppercase">
-          När
+          When
         </label>
         <input
           id="search-date"
@@ -118,7 +118,7 @@ export function SearchForm({ defaults = {} }: Props) {
         />
       </div>
       <button type="submit" className="btn-primary px-7 py-3.5">
-        Sök
+        Search
       </button>
       {geoError && <p className="px-4 pb-2 text-xs text-danger sm:col-span-4">{geoError}</p>}
     </form>
